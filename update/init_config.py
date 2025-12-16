@@ -9,6 +9,7 @@ config_text = Default.config.py_text
 config_content = File.Read(Default.config.toml_file).toml()
 py_config = Default.config.py_file
 project_path_list = Default.project.path
+env = Path.cwd()
 
 def splicing_config_content(content:str, is_empty=True, indent=4):
     global config_text
@@ -16,32 +17,56 @@ def splicing_config_content(content:str, is_empty=True, indent=4):
     empty = empty * indent
     config_text += f"{empty}{content}\n"
 
-def inspect_root(class_content):
+    if "class" in content:
+        log.debug("生成配置 %s"%content)
+    else:
+        log.debug(content)
 
-    try:
-        root = class_content['root']
-    except KeyError:
-        root = './'
-        log.debug("没有指定根目录地址，使用默认根目录%s"%Path(root))
-    return Path(root)
-
-def generate_project_config(root:Path):
+def generate_project_config(class_content:dict):
     """生成 project 类的配置项"""
 
-    def create_folder(dir:Path):
+    splicing_config_content("class Project:", is_empty=False)
 
-        if not dir.exists():
-            if Path(dir).suffix:
-                log.debug("%s 是文件，停止创建文件夹"%dir); return
+    def inspect_root():
+
+        try:
+            root = class_content['root']
+        except KeyError:
+            root = './'
+            log.debug("没有指定根目录地址，使用默认根目录%s"%Path(root))
+        root = Path(root)
+
+        if not root.is_absolute():
+            return env.joinpath(root)
+        return root
+            
+
+    root = inspect_root()
+
+    for path_map in project_path_list:
+
+        if path_map == 'template':
+            full_path = project_path_list[path_map]
+            if not Path(full_path).exists():
+                log.error("不存在模板文件 %s , 退出程序"%full_path)
+                exit()
+
+        elif path_map not in class_content:
+            full_path = root.joinpath(project_path_list[path_map])
+
+        else:
+            full_path  = root.joinpath(class_content[path_map])
+
+        full_path = Path(full_path)
+
+        if not full_path.exists():
+            if full_path.suffix: continue
             try:
-                Path(dir).mkdir(parents=True, exist_ok=True)
-                log.debug(f"创建目录{dir}")
+                full_path.mkdir(parents=True, exist_ok=True)
+                log.debug(f"创建目录{full_path}")
             except PermissionError:
                 log.error("创建根目录时权限不足，请检查并重试")
-    splicing_config_content("class Project:", is_empty=False)
-    for path_map in project_path_list:
-        full_path = root.joinpath(project_path_list[path_map])
-        create_folder(full_path)
+        
         splicing_config_content(f"{path_map} = r'{full_path}'")
 
 def generate_requests_config(requests_content:dict):
@@ -137,24 +162,15 @@ def generate_program_config(program_content):
 
 
 log.info("初始化 update sing-box config 配置文件")
+
+
 for name in config_content:
     class_content = config_content[name]
-    ## 生成 Project:
-    if name.lower() == "project":
-        root = inspect_root(class_content)
-        generate_project_config(root)
-        log.debug("生成配置 project") 
-
-    if name.lower() == 'requests': 
-        generate_requests_config(class_content)
-        log.debug("生成配置 requests") 
-        
-    if name.lower() == 'porxy': 
-        generate_proxy_config(class_content)
-        log.debug("生成配置 porxy")
-
-    if name.lower() == 'program':
-        generate_program_config(class_content)
-        log.debug("生成配置 Program")
+    func_name = f'generate_{name.lower()}_config'
+    try:
+        eval(func_name)(class_content)
+        log.info(f"生成类 {name}")
+    except NameError:
+        pass
 
 File.write(py_config).common(config_text)
