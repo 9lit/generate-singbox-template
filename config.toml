@@ -1,7 +1,7 @@
 [Project]
 
 # 配置文件所在的根目录
-root = 'C:\Users\blsm\Desktop\parents'
+root = './template'
 ## 文件下载目录 root\source\<requests.url.site_microsoft> 
 ## json 文件合并后的目录 root\source
 ## 日志文件 root\<log.level.path>
@@ -57,7 +57,7 @@ apple-cn = [
 
 [program]
 
-sing-box = 'C:\\Users\\blsm\\AppData\\Roaming\\magic-network\\sing-box\\sing-box.exe'
+sing-box = 'sing-box'
 
 [Porxy]
 # 程序代理， 当 flag 等于 false 时， 代理不生效
