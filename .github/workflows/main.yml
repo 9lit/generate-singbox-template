@@ -40,4 +40,4 @@ jobs:
           git config user.email "actions@github.com"
           git add -f template/*
           git commit -m "Update template"
-          git push origin rule-set
+          git push --force origin HEAD:rule-set

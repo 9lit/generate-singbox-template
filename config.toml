@@ -57,7 +57,7 @@ apple-cn = [
 
 [program]
 
-sing-box = 'C:\\Users\\blsm\\AppData\\Roaming\\magic-network\\sing-box\\sing-box.exe'
+sing-box = 'sing-box'
 
 [Porxy]
 # 程序代理， 当 flag 等于 false 时， 代理不生效
