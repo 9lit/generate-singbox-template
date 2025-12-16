@@ -1,5 +1,6 @@
 import requests
 import copy
+import shutil
 from pathlib import Path
 from config import *
 import update
@@ -109,8 +110,14 @@ class MergeJsonConfig:
             jsonfile_list = list(jsonfile)
             if len(jsonfile_list) == 1:
                 src_file = Path(jsonfile_list[0])
-                dst_file.write_text(src_file.read_text())
-                log.info("复制文件到 %s"%dst_file)
+                try:
+                    shutil.copyfile(src_file, dst_file)
+                    log.info("复制文件到 %s"%dst_file)
+                except shutil.SameFileError:
+                    log.error("源文件和目标文件相同 %s"%src_file)
+                except FileExistsError as e:
+                    log.error("文件不存在，%s"%e)
+                
                 continue
             
             for file in jsonfile:
