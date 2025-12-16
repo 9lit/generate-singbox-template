@@ -183,7 +183,7 @@ class Generate:
             route_not_cn = {
                 "rule_set": not_cn_tag,
                 "action": "route",
-                "outbound": "select"
+                "outbound": "out_select"
             }
             route.append(route_not_cn)
 
