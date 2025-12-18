@@ -36,7 +36,7 @@ jobs:
 
           # 克隆 config-singbox仓库
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
-          cp -r template/1.12/* config-singbox/1.12
+          cp -r 1.12.json config-singbox/1.12
           cd config-singbox
 
           # 设置用户以示区分
@@ -50,6 +50,6 @@ jobs:
 
           # 推送源文件 到分支 rule-set
           git checkout rule-set
-          cp ../template/*.json ./
+          cp ../rule-set/*.srs ./
           git add .
           git commit -m "update"
