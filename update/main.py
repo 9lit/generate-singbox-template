@@ -290,7 +290,7 @@ class Generate:
             dns_diver()
 
     def update(self):
-        out_path = "%s.json"%ver
+        out_path = "dns_%s.json"%ver
         w_file(out_path).json(self.template_content)
         
 # class SingBoxConfig:
