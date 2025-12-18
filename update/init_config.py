@@ -8,7 +8,7 @@ log = update.Log()
 config_text = Default.config.py_text
 config_content = File.Read(Default.config.toml_file).toml()
 py_config = Default.config.py_file
-project_path_list = Default.project.path
+outfile = Default.outfile
 env = Path.cwd()
 
 def splicing_config_content(content:str, is_empty=True, indent=4):
@@ -22,52 +22,33 @@ def splicing_config_content(content:str, is_empty=True, indent=4):
     else:
         log.debug(content)
 
-def generate_project_config(class_content:dict):
+def generate_file_config(class_content:dict):
     """生成 project 类的配置项"""
 
-    splicing_config_content("class Project:", is_empty=False)
+    splicing_config_content("class File:", is_empty=False)
 
-    def inspect_root():
+    # 获取根目录
+    try:
+        root = class_content['root']
+    except KeyError:
+        root = outfile.root
+        log.debug("没有指定根目录地址，使用默认根目录%s"%Path(root))
+    root = Path(root)
 
-        try:
-            root = class_content['root']
-        except KeyError:
-            root = './'
-            log.debug("没有指定根目录地址，使用默认根目录%s"%Path(root))
-        root = Path(root)
+    if not root.is_absolute():
+        root = env.joinpath(root)
 
-        if not root.is_absolute():
-            return env.joinpath(root)
-        return root
-            
+    splicing_config_content(f"root = r'{root}'")
 
-    root = inspect_root()
+    try:
+        prefile = class_content['prefile']
+        if not Path(prefile).is_absolute():
+            prefile = env.joinpath(prefile)
 
-    for path_map in project_path_list:
+        splicing_config_content(f"prefile = r'{prefile}'")
+    except:
+        exit("缺少模板文件")
 
-        if path_map == 'template':
-            full_path = project_path_list[path_map]
-            if not Path(full_path).exists():
-                log.error("不存在模板文件 %s , 退出程序"%full_path)
-                exit()
-
-        elif path_map not in class_content:
-            full_path = root.joinpath(project_path_list[path_map])
-
-        else:
-            full_path  = root.joinpath(class_content[path_map])
-
-        full_path = Path(full_path)
-
-        if not full_path.exists():
-            if full_path.suffix: continue
-            try:
-                full_path.mkdir(parents=True, exist_ok=True)
-                log.debug(f"创建目录{full_path}")
-            except PermissionError:
-                log.error("创建根目录时权限不足，请检查并重试")
-        
-        splicing_config_content(f"{path_map} = r'{full_path}'")
 
 def generate_requests_config(requests_content:dict):
     """
@@ -160,6 +141,18 @@ def generate_program_config(program_content):
         param = param.replace('-', '_')
         splicing_config_content(f"{param} = '{param_path}'")
 
+def generate_version_config(version_content):
+    if not version_content: return
+    
+    ver = 'num'
+    splicing_config_content("class Version:", is_empty=False)
+    
+    try:
+        version = version_content[ver]
+    except KeyError:
+        version = "Unknown"
+
+    splicing_config_content(f"{ver} = {version}")
 
 log.info("初始化 update sing-box config 配置文件")
 

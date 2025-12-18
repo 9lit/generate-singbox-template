@@ -1,7 +1,8 @@
-[Project]
+[file]
 
 # 配置文件所在的根目录
-root = './template'
+root = './rule-set'
+prefile = 'pre-config.json'
 ## 文件下载目录 root\source\<requests.url.site_microsoft> 
 ## json 文件合并后的目录 root\source
 ## 日志文件 root\<log.level.path>
@@ -65,3 +66,6 @@ sing-box = 'sing-box'
 flag = false
 url = "127.0.0.1"
 port = 10808
+
+[version]
+num = 1.12

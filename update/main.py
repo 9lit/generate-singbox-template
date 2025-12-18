@@ -2,28 +2,41 @@ import requests
 import copy
 import shutil
 from pathlib import Path
-from config import *
 import update
+import config
 
 log = update.Log()
 r_file = update.File.Read
 w_file = update.File.write
 process_script = update.process_script
 
+# 文件路径
+f = config.File
+root = Path(f.root)
+prefile = Path(f.prefile)
+
+# requests 参数
+r = config.Requests
+headers = r.headers
+urls = r.url
+
+# Program 参数
+sing_box = config.Program.sing_box
+
+ver = config.Version.num
+
 
 class Downloads:
 
     def __init__(self):
-        self.headers = Requests.headers
-        self.downlaod_dir = Project.source
-        self.downlaod_list = Requests.url.__dict__.items()
+        self.downlaod_list = urls.__dict__.items()
 
     def download(self):
 
         def __group(file_parent:Path, url:str):
             filename = url.split('/')[-1]
             file = file_parent.joinpath(filename)
-            response = requests.get(url, headers=self.headers, stream=True)
+            response = requests.get(url, headers=headers, stream=True)
             try:
                 with open(file, 'wb') as code: 
                     code.write(response.content)
@@ -37,7 +50,7 @@ class Downloads:
 
         def __create(name):
             try:
-                file_parent = Path(self.downlaod_dir).joinpath(name)
+                file_parent = root.joinpath(name)
                 log.debug("获取本地保存地址 %s"%file_parent)
 
                 if file_parent.exists(): return file_parent
@@ -60,8 +73,7 @@ class Downloads:
 class ToJosn:
 
     def __init__(self):
-        source = Project.source
-        self.source_group_dir = [f for f in Path(source).iterdir() if f.is_dir()]
+        self.source_group_dir = [f for f in root.iterdir() if f.is_dir()]
 
     def srs(self):
         srs_list = [f for d in self.source_group_dir for f in d.glob("*.srs") if f.is_file()]
@@ -72,7 +84,7 @@ class ToJosn:
             if Path(output).exists():
                 log.debug(f"已存在，无需再次转换 {output}")
                 continue
-            sing_box = Program.sing_box
+    
             cmd = [sing_box, "rule-set", "decompile", file, "-o", output]
             result = process_script(cmd)
             if result:
@@ -83,8 +95,7 @@ class ToJosn:
 class MergeJsonConfig:
 
     def __init__(self):
-        self.source_dir = Path(Project.source)
-        self.group = [f for f in self.source_dir.iterdir() if f.is_dir()]
+        self.group = [f for f in root.iterdir() if f.is_dir()]
 
     def merge(self):
 
@@ -106,7 +117,7 @@ class MergeJsonConfig:
         for dir in self.group:
             group_content = None
             jsonfile = dir.rglob("*.json")
-            dst_file = self.source_dir.joinpath("%s.json"%dir)
+            dst_file = root.joinpath("%s.json"%dir)
             jsonfile_list = list(jsonfile)
             if len(jsonfile_list) == 1:
                 src_file = Path(jsonfile_list[0])
@@ -132,10 +143,8 @@ class MergeJsonConfig:
 class Generate:
 
     def __init__(self, mode='dns'):
-        self.template_content = r_file(Project.template).json()
-        self.configs_dir = Path(Project.configs)
-        source_dir = Path(Project.source)
-        self.source_set = [f for f in source_dir.iterdir() if f.is_file()]
+        self.template_content = r_file(prefile).json()
+        self.source_set = [f for f in root.iterdir() if f.is_file()]
 
         self.mode = mode
 
@@ -234,20 +243,9 @@ class Generate:
         if self.mode == "dns":
             dns_diver()
 
-    def platform(self):
-
-        def android():
-            self.template_content['route']['override_android_vpn'] = True
-            out_path = self.configs_dir.joinpath("android_config_dns.json")
-            w_file(out_path).json(self.template_content)
-
-        def windows():
-            self.template_content['route']['override_android_vpn'] = False
-            out_path = self.configs_dir.joinpath("windows_config_dns.json")
-            w_file(out_path).json(self.template_content)
-
-        android()
-        windows()
+    def update(self):
+        out_path = "%s.json"%ver
+        w_file(out_path).json(self.template_content)
         
 # class SingBoxConfig:
 

@@ -15,16 +15,10 @@ class Default:
             "Accept": "application/json"
             }
 
-    class project:
+    class outfile:
 
-        path = {
-            "template": "template.json",
-            "configs": "configs",
-            "test": "test.json",
-            "source": "source",
-            "binary": "binary"
-            }
-        
+        root = 'rule-set'
+
     class log:
         level_str_to_int = {"error": 0, "warn": 1, "info": 2, "debug": 3 }
         level_str = "debug"
