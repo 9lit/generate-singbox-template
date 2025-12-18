@@ -48,7 +48,10 @@ site-telegram = [
 site-ads-all = [
 	"https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs"
 ]
-		
+
+adguard = ["https://raw.githubusercontent.com/ppfeufer/adguard-filter-list/refs/heads/master/blocklist"]
+
+package-cn = ["https://raw.githubusercontent.com/9lit/config-singbox/rule-set/package.json"]
 
 gfw = ["https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt"]
 

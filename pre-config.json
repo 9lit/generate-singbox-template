@@ -113,8 +113,8 @@
       ]
     },
     {
-      "tag": "urltest",
-      "type": "auto",
+      "tag": "auto",
+      "type": "urltest",
       "outbounds": [
         "out_direct"
       ],

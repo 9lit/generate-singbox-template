@@ -2,9 +2,11 @@ from update import init_config, main
 
 main.Downloads().download()
 
-main.ToJosn().srs()
+main.Convert.tosource()
 
 main.MergeJsonConfig().merge()
+
+main.Convert.to_binary()
 
 g = main.Generate()
 g.inline()

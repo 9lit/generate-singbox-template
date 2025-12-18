@@ -63,35 +63,67 @@ class Downloads:
             return file_parent
 
         for group_name, url_lsit in self.downlaod_list:
-            if "site_" not in group_name: continue
+            if "site_" not in group_name: 
+                if "package" in group_name: pass
+                elif "adguard" in group_name: pass
+                else: continue
             if not url_lsit: continue
 
             log.debug(f"获取组名称 {group_name} 和 下载列表 {url_lsit}")
             file_parent = __create(group_name)
             __cycle_url_list(file_parent, url_lsit)
 
-class ToJosn:
+class Convert:
 
-    def __init__(self):
-        self.source_group_dir = [f for f in root.iterdir() if f.is_dir()]
-
-    def srs(self):
-        srs_list = [f for d in self.source_group_dir for f in d.glob("*.srs") if f.is_file()]
-        for file in srs_list:
-            log.debug("获取文件路径 %s"%file)
-            file = str(file)
-            output = file.replace(".srs", ".json")
+    def tosource():
+        srs_list = [f for f in root.rglob("*") if f.is_file()]
+        for f in srs_list:
+            log.debug("获取文件路径 %s"%f)
+            
+            if f.parent.name == "adguard":
+                output = root.joinpath("adguard.txt")
+                shutil.copy(f, output)
+                log.debug("移动adguard 至 %s"%output)
+                continue
+            
+            f = str(f)
+            output = f.replace(".srs", ".json")
             if Path(output).exists():
                 log.debug(f"已存在，无需再次转换 {output}")
                 continue
     
-            cmd = [sing_box, "rule-set", "decompile", file, "-o", output]
+            cmd = [sing_box, "rule-set", "decompile", f, "-o", output]
             result = process_script(cmd)
             if result:
                 log.info(f"转换文件至{output}")
             else:
-                log.error(f"文件 {file} 转换失败")
+                log.error(f"文件 {f} 转换失败")
 
+    def to_binary():
+        source_file = [f for f in root.glob("*") if f.is_file()]
+
+        for f in source_file:
+            log.debug("获取文件路径 %s"%f)
+            if f.suffix == ".json":
+                f = str(f)
+                output = f.replace(".json", ".srs")
+                cmd = [sing_box, "rule-set", "compile", f, "-o", output]
+            elif f.suffix == ".txt":
+                if f.name == "adguard.txt":
+                    f = str(f)
+                    output = f.replace(".txt", ".srs")
+                    cmd = [sing_box, "rule-set", "convert", "--type", "adguard", "--output", output, f]
+                else:
+                    continue
+            else:
+                continue
+
+            result = process_script(cmd)
+            if result:
+                log.info(f"转换文件至{output}")
+            else:
+                log.error(f"文件 {f} 转换失败")
+            
 class MergeJsonConfig:
 
     def __init__(self):
@@ -114,10 +146,11 @@ class MergeJsonConfig:
             old_rule['rules'][0] = old_rules
             return old_rule
 
-        for dir in self.group:
+        for d in self.group:
+            if d.name == "adguard":  continue
             group_content = None
-            jsonfile = dir.rglob("*.json")
-            dst_file = root.joinpath("%s.json"%dir)
+            jsonfile = d.rglob("*.json")
+            dst_file = root.joinpath("%s.json"%d)
             jsonfile_list = list(jsonfile)
             if len(jsonfile_list) == 1:
                 src_file = Path(jsonfile_list[0])
@@ -131,26 +164,39 @@ class MergeJsonConfig:
                 
                 continue
             
-            for file in jsonfile:
-                rule_set = r_file(file).json()
+            for f in jsonfile:
+                rule_set = r_file(f).json()
                 if not group_content: group_content = rule_set; continue
 
                 group_content = deduplica_marge(group_content, rule_set)
 
             w_file(dst_file).json(group_content)
-            log.info(f"合并规则集 {dir.name} 至 {dst_file}")
+            log.info(f"合并规则集 {d.name} 至 {dst_file}")
 
 class Generate:
 
     def __init__(self, mode='dns'):
         self.template_content = r_file(prefile).json()
-        self.source_set = [f for f in root.iterdir() if f.is_file()]
+        self.source_set = [f for f in root.iterdir() if f.is_file() and f.suffix == ".json"]
 
         self.mode = mode
 
     def inline(self):
         
         for set_file in self.source_set:
+            
+            if "adguard" in set_file.name:
+
+                new_set = {
+                    "type": "remote",
+                    "tag": "adguard",
+                    "url": "https://raw.githubusercontent.com/9lit/config-singbox/rule-set/adguard.srs",
+                    "download_detour": "out_direct"
+                }
+
+                self.template_content['route']['rule_set'].append(new_set)
+                continue
+            
             set_content =  r_file(set_file).json()
             tag = set_file.stem
 
