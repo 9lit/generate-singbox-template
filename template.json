@@ -105,6 +105,24 @@
   ],
   "outbounds": [
     {
+      "tag": "out_proxy",
+      "type": "selector",
+      "default": "auto",
+      "outbounds": [
+        "auto",
+        "out_direct"
+      ]
+    },
+    {
+      "tag": "urltest",
+      "type": "auto",
+      "outbounds": [
+        "out_direct"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m"
+    },
+    {
       "type": "direct",
       "udp_fragment": true,
       "tag": "out_direct"
