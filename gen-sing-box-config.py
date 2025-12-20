@@ -59,30 +59,30 @@ update_dns_rules.update()
 logging.info(f"更新文件{config.FilePath.outinline.name}")
 
 """ 将 rule-set 替换为远程规则集 并生成新的文件"""
-pref_remote = route[element.rule_set][element.remote]
-remote_rule_set = []
-content = new_sing_box()
+# pref_remote = route[element.rule_set][element.remote]
+# remote_rule_set = []
+# content = new_sing_box()
 
-# 获取仓库文件列表
-response = requests.get(config.Github.api)
-if response.status_code == 200: github_data = response.json()
-else: logging.error("github 仓库信息获取失败"); exit()
+# # 获取仓库文件列表
+# response = requests.get(config.Github.api)
+# if response.status_code == 200: github_data = response.json()
+# else: logging.error("github 仓库信息获取失败"); exit()
 
-# GIthub 枚举信息重命名
-enum_github = enum.Github
-# 格式化仓库文件信息
-for github_item in github_data:
-    name = github_item[enum_github.name]
-    download_url = github_item[enum_github.download_url]
-    name, suffix = name.split(".")
-    if suffix != 'srs': continue
+# # GIthub 枚举信息重命名
+# enum_github = enum.Github
+# # 格式化仓库文件信息
+# for github_item in github_data:
+#     name = github_item[enum_github.name]
+#     download_url = github_item[enum_github.download_url]
+#     name, suffix = name.split(".")
+#     if suffix != 'srs': continue
 
-    remote = deepcopy(pref_remote)
-    remote[element.tag] = name
-    remote[element.url] = download_url
-    remote_rule_set.append(remote)
+#     remote = deepcopy(pref_remote)
+#     remote[element.tag] = name.replace("_","-")
+#     remote[element.url] = download_url
+#     remote_rule_set.append(remote)
 
-content[element.route][element.rule_set] = remote_rule_set
+# content[element.route][element.rule_set] = remote_rule_set
 
-writeJSON(content, config.FilePath.outremote)
-logging.info(f"根据文件{config.FilePath.outinline.name}, 更新规则集， 并生成文件{config.FilePath.outremote.name}")
+# writeJSON(content, config.FilePath.outremote)
+# logging.info(f"根据文件{config.FilePath.outinline.name}, 更新规则集， 并生成文件{config.FilePath.outremote.name}")
