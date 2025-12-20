@@ -1,0 +1,36 @@
+[route.rule_set.inline]
+type = "inline"
+tag = ""
+rules = []
+
+[route.rule_set.remote]
+
+type = "remote"
+tag = ""
+format = "binary"
+url = ""
+
+[route.rules.direct]
+ip_is_private = true
+rule_set = []
+action = "route"
+outbound = "out_direct"
+
+[route.rules.proxy]
+rule_set = []
+action = "route"
+outbound = "out_proxy"
+
+[route.rules.block]
+rule_set = []
+action = "reject"
+
+[dns.rules]
+rule_set = []
+action = "route"
+server = "dns_dot_Google"
+
+[dns.server]
+proxy = "dns_dot_Google"
+direct = "dns_dot_Ali"
+block = "dns_block"

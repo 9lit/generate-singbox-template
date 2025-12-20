@@ -30,20 +30,23 @@ jobs:
           pip install -r ./requirements.txt 
         
           # 执行更新程序
-      - name: Run run.py
-        run: python run.py
+      - name: Run Python
+        run: |
+          python update-rule-set.py
+          python gen-sing-box-config.py
 
       - name: Push to config-singbox repo
         run: |
 
           # 克隆 config-singbox仓库
           git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
-          cp -r dns_1.12.json config-singbox/1.12
-          cd config-singbox
-
           # 设置用户以示区分
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@github.com"
+
+          # 推送 模板文件到 config-singbox/main 仓库中
+          cp -r singbox/output/* config-singbox/1.12
+          cd config-singbox
           
           # 推送模板文件到 main/版本号中
           git add .

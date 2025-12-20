@@ -137,11 +137,6 @@
       {
         "protocol": "dns",
         "action": "hijack-dns"
-      },
-      {
-        "ip_is_private": true,
-        "action": "route",
-        "outbound": "out_direct"
       }
     ],
     "rule_set": [],
