@@ -74,7 +74,7 @@ for fjson in json_list:
 json_list = [f for f in config.FilePath.output.iterdir() if f.is_file and f.suffix == enum.Suffix.json]
 for fjson in json_list:
 
-    fsrs = fjson.with_name(fjson.name.replace("_","-")).with_suffix(enum.Suffix.srs)
+    fsrs = fjson.with_name(f'site-{fjson.name.replace("_","-")}').with_suffix(enum.Suffix.srs)
     cmd = [program, "rule-set", "compile", fjson, "-o", fsrs]
     script(cmd)
 
