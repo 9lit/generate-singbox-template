@@ -40,13 +40,14 @@ jobs:
 
           # 克隆 config-singbox仓库
           git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
-          # 设置用户以示区分
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@github.com"
 
           # 推送 模板文件到 config-singbox/main 仓库中
           cp -r singbox/output/* config-singbox/1.12
           cd config-singbox
+
+          # 设置用户以示区分
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@github.com"
           
           # 推送模板文件到 main/版本号中
           git add .
