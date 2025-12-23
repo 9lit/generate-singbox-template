@@ -29,9 +29,9 @@ action = "reject"
 [dns.rules]
 rule_set = []
 action = "route"
-server = "dns_dot_Google"
+server = "dns_proxy"
 
 [dns.server]
-proxy = "dns_dot_Google"
-direct = "dns_dot_Ali"
+proxy = "dns_proxy"
+direct = "dns_direct"
 block = "dns_block"
