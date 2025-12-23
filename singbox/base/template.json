@@ -10,7 +10,7 @@
         "type": "tls",
         "server": "dns.google",
         "domain_resolver": "dns_resolver",
-        "detour": "out_proxy"
+        "detour": "💯 节点选择"
       },
       {
         "tag": "dns_doh_cloudflare",
@@ -18,7 +18,7 @@
         "server": "cloudflare-dns.com",
         "path": "/dns-query",
         "domain_resolver": "dns_resolver",
-        "detour": "out_proxy"
+        "detour": "💯 节点选择"
       },
       {
         "tag": "dns_doh_DNSPod",
@@ -102,31 +102,7 @@
       "stack": "mixed"
     }
   ],
-  "outbounds": [
-    {
-      "tag": "out_proxy",
-      "type": "selector",
-      "default": "auto",
-      "outbounds": [
-        "auto",
-        "out_direct"
-      ]
-    },
-    {
-      "tag": "auto",
-      "type": "urltest",
-      "outbounds": [
-        "out_direct"
-      ],
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "3m"
-    },
-    {
-      "type": "direct",
-      "udp_fragment": true,
-      "tag": "out_direct"
-    }
-  ],
+  "outbounds": [],
   "route": {
     "auto_detect_interface": true,
     "default_domain_resolver": "dns_resolver",
@@ -140,14 +116,14 @@
       }
     ],
     "rule_set": [],
-    "final": "out_proxy"
+    "final": "💯 节点选择"
   },
   "experimental": {
     "clash_api": {
       "external_controller": "127.0.0.1:9090",
       "external_ui": "zashboard",
       "external_ui_download_url": "https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip",
-      "external_ui_download_detour": "out_proxy"
+      "external_ui_download_detour": "💯 节点选择"
     },
     "cache_file": {
       "enabled": true,

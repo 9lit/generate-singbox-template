@@ -20,7 +20,7 @@ outbound = "out_direct"
 [route.rules.proxy]
 rule_set = []
 action = "route"
-outbound = "out_proxy"
+outbound = "💯 节点选择"
 
 [route.rules.block]
 rule_set = []
