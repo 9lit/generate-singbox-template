@@ -44,8 +44,8 @@ jobs:
           git config user.email "github-actions[bot]@github.com"
 
           git add .
-          git commit -m "update"
-          git push
+          git commit -m "update" || echo "nothing to commit"
+          git push || echo "nothing to push"
 
       - name: Push to config-singbox repo
         run: |
@@ -63,5 +63,5 @@ jobs:
 
           # 推送源文件 到分支 rule-set
           git add .
-          git commit -m "update"
-          git push
+          git commit -m "update" || echo "nothing to commit"
+          git push || echo "nothing to push"
