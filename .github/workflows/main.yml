@@ -40,9 +40,6 @@ jobs:
 
       - name: Push base/url_set.txt
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@github.com"
-
           git add .
           git commit -m "update" || echo "nothing to commit"
           git push || echo "nothing to push"
@@ -56,6 +53,9 @@ jobs:
           ls rule-set
           cd config-singbox
           cp -r ./rule-set/*.srs ./config-singbox/
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@github.com"
 
           # 推送源文件 到分支 rule-set
           git add .
