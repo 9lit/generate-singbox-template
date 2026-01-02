@@ -82,6 +82,8 @@ def binary_adguard():
 
 def clear_cache():
 
+    if file_path.rule_set_remote_url_set.exists(): os.remove(file_path.rule_set_remote_url_set)
+
     if not file_path.output.exists(): return
     shutil.rmtree(file_path.output)
 
