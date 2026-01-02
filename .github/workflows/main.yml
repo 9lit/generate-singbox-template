@@ -53,8 +53,9 @@ jobs:
           git clone --depth 1 -b rule-set https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
           
           ls
+          ls rule-set
           cd config-singbox
-          cp rule-set/*.srs config-singbox
+          cp rule-set/*.srs config-singbox/
 
           # 设置用户以示区分
           git config user.name "github-actions[bot]"

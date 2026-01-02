@@ -82,21 +82,20 @@ def binary_adguard():
 
 def clear_cache():
 
-    if file_path.rule_set_remote_url_set.exists(): os.remove(file_path.rule_set_remote_url_set)
-
     if not file_path.output.exists(): return
     shutil.rmtree(file_path.output)
 
-def write(name, link):
+def write(name, link, mode):
     """将 rule-set 连接写入缓存文件"""
-    with open(file_path.rule_set_remote_url_set, 'a+') as f: 
+    with open(file_path.rule_set_remote_url_set, mode) as f: 
         f.writelines(f"site-{name}={link}\n")
 
 def run(clear_file:str):
 
     if clear_file.upper() == "Y" : clear_cache()
 
-    for urls in download_urls:
+    for index, urls in enumerate(download_urls):
+        mode = 'w' if index == 0 else "a+"
 
         link = download_urls[urls]
         repo_rule_set_name = urls.replace("_", "-")
@@ -104,10 +103,10 @@ def run(clear_file:str):
         if urls == enum.groups.adguard or len(link) != 1: 
             download_rule_set(urls)
             repo_rule_set = repo + "/" + repo_rule_set_name + enum.Suffix.srs
-            write(repo_rule_set_name, repo_rule_set)
+            write(repo_rule_set_name, repo_rule_set, mode)
             continue
         
-        write(repo_rule_set_name, link[0])
+        write(repo_rule_set_name, link[0], mode)
 
     len_downloads = len(list(file_path.downloads.iterdir()))
 
