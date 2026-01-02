@@ -1,5 +1,6 @@
 name: Generate sing-box config template
 on: 
+  workflow_dispatch:
   push:
     branches:
       - main
