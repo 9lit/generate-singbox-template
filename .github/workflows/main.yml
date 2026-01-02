@@ -17,26 +17,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v5
-      
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11.9'
+          cache: "pip"
+      - run:
+         pip install -r requirements.txt 
+
       - name: Install sing-box
         run: |
           curl -fsSL https://sing-box.app/install.sh | sh -s -- --version 1.12.12
-  
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11.9'
 
-      - name: Install requirements.txt
-        run: | 
-          pip install -r ./requirements.txt 
-        
       - name: Run Python
         run: |
           python update-rule-set.py N
-
 
       - name: Push base/url_set.txt
         run: |
@@ -55,7 +52,7 @@ jobs:
           git clone --depth 1 -b rule-set https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
           
           # 复制输出的 rule-set 文件到 config-singbox
-          cp -r ./rule-set/*.srs ./config-singbox/
+          cp -r rule-set/*.srs config-singbox/
           cd config-singbox
 
           # 推送源文件 到分支 rule-set
