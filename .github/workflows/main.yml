@@ -51,7 +51,8 @@ jobs:
 
           # 克隆 config-singbox rule-set 分支的最新提交记录
           git clone --depth 1 -b rule-set https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
-
+          
+          ls
           cd config-singbox
           cp rule-set/*.srs config-singbox
 
