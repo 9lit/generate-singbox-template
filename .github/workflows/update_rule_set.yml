@@ -45,6 +45,7 @@ jobs:
           # 复制输出的 rule-set 文件到 config-singbox
           cp output/*.srs output/config/set_config.json rule-set/
           cd rule-set
+          ls 
 
           # 推送源文件 到分支 rule-set
           git add .
