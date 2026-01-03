@@ -14,20 +14,20 @@
       {
         "tag": "dns_direct",
         "type": "tls",
-        "server": "one.one.one.one",
+        "server": "dns.alidns.com",
         "domain_resolver": "dns_resolver",
         "detour": "本地"
       },
       {
         "tag": "dns_proxy",
-        "type": "tls",
-        "server": "one.one.one.one",
+        "type": "https",
+        "server": "dns.cloudflare.com",
         "domain_resolver": "dns_resolver",
         "detour": "代理"
       },
       {
         "tag": "dns_block",
-        "type": "host",
+        "type": "hosts",
         "path": [],
         "predefined": {}
       }
@@ -86,14 +86,14 @@
       }
     ],
     "rule_set": [],
-    "final": "🔓 魔法上网"
+    "final": "代理"
   },
   "experimental": {
     "clash_api": {
       "external_controller": "127.0.0.1:9090",
       "external_ui": "zashboard",
       "external_ui_download_url": "https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip",
-      "external_ui_download_detour": "🔓 魔法上网"
+      "external_ui_download_detour": "代理"
     },
     "cache_file": {
       "enabled": true,
