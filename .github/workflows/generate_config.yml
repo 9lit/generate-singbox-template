@@ -36,6 +36,10 @@ jobs:
           # 克隆 config-singbox main 分支的最新提交记录
           git clone --depth 1 https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/Config.git
           
+          # 设置身份
+          git config --global user.email "action[bot]@github.com"
+          git config --global user.name "action[bot]"
+          
           # 复制输出的 rule-set 文件到 config-singbox
           cp -r output/config/singbox_config_*.json Config/sing-box
           cd Config
