@@ -83,8 +83,7 @@ profile_default/
 ipython_config.py
 
 # output
-singbox/output/
-rule-set/
+output/
 
 # test
 test.py

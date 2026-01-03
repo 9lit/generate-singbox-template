@@ -1,44 +1,42 @@
 import requests
 import argparse
-import os
 import shutil
-from update import logging
-from update import config, enum
-from update import process_script as script, readJSON
 
-def download_rule_set(urls):
+import base
+import base.config
+import base.enum
 
+def downloads(g_name:str, url:str):
     # 获取下载地址， 并创建文件夹
-    download_dir = config.FilePath.downloads.joinpath(urls)
+    download_dir = path.downloads.joinpath(g_name)
+
+    logging.info(f"func: {downloads.__name__} \n组名称：{g_name}\n 下载链接： {url}")
+
     try:
         if not download_dir.exists(): 
             download_dir.mkdir(parents=True, exist_ok=True)
-            logging.debug("创建成功")
-    except PermissionError as e:
+            logging.debug(f"创建文件夹{download_dir}")
+    except PermissionError:
         logging.error("权限不足，无法创建文件夹，跳过本次下载")
-
+        return
 
     # 下载文件
-    for url in download_urls[urls]:
-        filename = url.split("/")[-1]
-        if len(filename.split(".")) == 1:
-            filename = filename + ".txt"
-        path = download_dir.joinpath(filename)
-        response = requests.get(url, stream=True)
-        
-        with open(path, 'wb') as b: b.write(response.content)
-        logging.info("成功下载文件：%s"%filename)
+    response = requests.get(url, stream=True)
+
+    file = download_dir.joinpath(url.split("/")[-1] )
+    base.write(response.content, path=file, mode='wb', encoding=None)
+    logging.info(f"成功下载文件 {file}")
 
 def merge_json():
     """ 合并同类型的规则文件，即配置文件 pref.example.toml 中 downloads 同列表的规则 """
-    json_list = [f for f in file_path.downloads.rglob("*") if f.is_file and f.suffix == enum.Suffix.json]
+    json_list = [f for f in path.downloads.rglob("*") if f.is_file and f.suffix == enum.suffix.json]
 
     for fjson in json_list:
         rule_set_file_name = fjson.parent.with_suffix(enum.Suffix.json).name
-        rule_set_file = file_path.output.joinpath(rule_set_file_name)
+        rule_set_file = path.output.joinpath(rule_set_file_name)
 
-        old_rules_content = readJSON(rule_set_file)
-        new_rules_content = readJSON(fjson)
+        old_rules_content = base.read(rule_set_file)
+        new_rules_content = base.read(fjson)
 
         new_rules = new_rules_content[enum.RuleSet.rules][0]
         old_rules = old_rules_content[enum.RuleSet.rules][0]
@@ -49,83 +47,80 @@ def merge_json():
             else:
                 old_rules[rule] = new_rules[rule]
 
-def to_json():
-    srs_list = [f for f in config.FilePath.downloads.rglob("*") if f.is_file and f.suffix == enum.Suffix.srs]
-    for fsrs in srs_list:
+def compile(suffix):
+    if suffix == enum.suffix.srs:
+        is_compile = "decompile"
+        after_suffix = enum.suffix.json
 
-        fjson = fsrs.with_suffix(enum.Suffix.json)
-        cmd = [program, "rule-set", "decompile", fsrs, "-o", fjson]
-        script(cmd)
+    else:
+        is_compile = "compile"
+        after_suffix = enum.suffix.srs
 
-def to_binary():
-    json_list = [f for f in config.FilePath.output.iterdir() if f.is_file and f.suffix == enum.Suffix.json]
-    for fjson in json_list:
+    files = [f for f in path.downloads.rglob("*") if f.is_file and f.suffix == suffix]
 
-        fsrs = fjson.with_name(f'site-{fjson.name.replace("_","-")}').with_suffix(enum.Suffix.srs)
-        cmd = [program, "rule-set", "compile", fjson, "-o", fsrs]
-        script(cmd)
+    for f in files:
+        if f.parent.name == enum.group.adguard: continue
+        after_file = f.with_suffix(after_suffix)
+        cmd = [enum.singbox, enum.rule_set, is_compile, f, "-o", after_file]
+        base.process_script(cmd)
 
 def binary_adguard():
-    adguard = file_path.adguard_file
-    if not adguard.exists():
-        logging.info("adguard 的默认位置不存在，开始搜索文件")
-        all_file = config.FilePath.output.rglob("*")
+    adguard = [f for f in path.downloads.rglob("*") if f.is_file and f.name == "blocklist"]
+    if not adguard: return
+    adguard = adguard[0]
+    binary = path.outpath.joinpath(adguard.name).with_suffix(enum.suffix.srs)
 
-        for f in all_file:
-            if f.is_file and f.parent.name == enum.groups.adguard: adguard = f
-
-    srs_adguard = file_path.output.joinpath(enum.groups.adguard).with_suffix(enum.Suffix.srs)
-
-    cmd = [program, "rule-set", "convert", "--type", "adguard", "--output", srs_adguard, adguard]
-    script(cmd)
+    cmd = ["sing-box", "rule-set", "convert", "--type", "adguard", "--output", str(binary), str(adguard)]
+    base.process_script(cmd)
     logging.info("adguard 文件转换成功")
 
-def clear_cache():
 
-    if not file_path.output.exists(): return
-    shutil.rmtree(file_path.output)
+def run(cache:str="Y"):
 
-def write(name, link, mode):
-    """将 rule-set 连接写入缓存文件"""
-    with open(file_path.rule_set_remote_url_set, mode) as f: 
-        f.writelines(f"site-{name}={link}\n")
+    if cache.upper() == "Y" and path.outpath.exists() : shutil.rmtree(path.outpath)
 
-def run(clear_file:str):
-
-    if clear_file.upper() == "Y" : clear_cache()
-
-    for index, urls in enumerate(download_urls):
-        mode = 'w' if index == 0 else "a+"
-
-        link = download_urls[urls]
-        repo_rule_set_name = urls.replace("_", "-")
-
-        if urls == enum.groups.adguard or len(link) != 1: 
-            download_rule_set(urls)
-            repo_rule_set = repo + "/" + repo_rule_set_name + enum.Suffix.srs
-            write(repo_rule_set_name, repo_rule_set, mode)
-            continue
+    after_config = {}
+    group =  pref_config[enum.group.group]
+    for g_name in group:
         
-        write(repo_rule_set_name, link[0], mode)
+        try: 
+            urls = group[g_name][enum.download]
+        except KeyError: 
+            logging.warning(f"{g_name}组不存在下载列表，跳过本次下载")
+            continue;
+        
+        try:
+            after_config[g_name]
+        except KeyError:
+            after_config[g_name] = {"url" : []}
+        
+        if g_name == enum.group.adguard or len(urls) > 2:
+            for url in urls: downloads(g_name, url)
+            after_config[g_name][enum.url] = pref_config['repo'] + f"{g_name}.srs"
+        else:
+            after_config[g_name][enum.url] = urls[0]
 
-    len_downloads = len(list(file_path.downloads.iterdir()))
+    # 二进制文件解码
+    compile(enum.suffix.srs)
+    merge_json()
+    # 转为二进制文件
+    compile(enum.suffix.json)
 
-    if len_downloads > 2: 
-        to_json(); merge_json(); to_binary()
-    else:
-        logging.info("没有可合并的文件")
+    base.write(after_config, path=path.after_config)
 
     binary_adguard()
 
 if __name__ == "__main__":
+    config = base.config
+    path = config.Path
+    pref_config = config.Content.pref_config
+
+    enum = base.enum
+
+    logging = config.logging
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("clear_file", default="Y", help="Y/n，清除缓存文件，默认为 Y。")
+    parser.add_argument("cache", default="Y", help="Y/n，清除缓存文件，默认为 Y。")
     options = parser.parse_args()
 
-    file_path = config.FilePath
-    repo = config.pref_update[enum.Pref.repo]
-    download_urls = config.pref_update[enum.Pref.downloads]
-    program = config.pref_update[enum.Pref.program][enum.Pref.singbox]
-
-    run(options.clear_file)
+    run(options.cache)

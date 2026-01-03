@@ -6,44 +6,28 @@
   "dns": {
     "servers": [
       {
-        "tag": "dns_proxy_bat",
-        "type": "tls",
-        "server": "dns.google",
-        "domain_resolver": "dns_resolver",
-        "detour": "💯 节点选择"
-      },
-      {
-        "tag": "dns_proxy",
-        "type": "https",
-        "server": "cloudflare-dns.com",
-        "path": "/dns-query",
-        "domain_resolver": "dns_resolver",
-        "detour": "💯 节点选择"
-      },
-      {
-        "tag": "dns_direct_bat",
-        "type": "https",
-        "server": "sm2.doh.pub",
-        "path": "/dns-query",
-        "domain_resolver": "dns_resolver",
-        "detour": "out_direct"
+        "tag": "dns_resolver",
+        "type": "udp",
+        "server": "223.5.5.5",
+        "detour": "本地"
       },
       {
         "tag": "dns_direct",
         "type": "tls",
-        "server": "dns.alidns.com",
+        "server": "one.one.one.one",
         "domain_resolver": "dns_resolver",
-        "detour": "out_direct"
+        "detour": "本地"
       },
       {
-        "tag": "dns_resolver",
-        "type": "udp",
-        "server": "223.5.5.5",
-        "detour": "out_direct"
+        "tag": "dns_proxy",
+        "type": "tls",
+        "server": "one.one.one.one",
+        "domain_resolver": "dns_resolver",
+        "detour": "代理"
       },
       {
         "tag": "dns_block",
-        "type": "hosts",
+        "type": "host",
         "path": [],
         "predefined": {}
       }
@@ -91,7 +75,7 @@
   "outbounds": [],
   "route": {
     "auto_detect_interface": true,
-    "default_domain_resolver": "dns_proxy",
+    "default_domain_resolver": "dns_direct",
     "rules": [
       {
         "action": "sniff"
@@ -102,14 +86,14 @@
       }
     ],
     "rule_set": [],
-    "final": "💯 节点选择"
+    "final": "🔓 魔法上网"
   },
   "experimental": {
     "clash_api": {
       "external_controller": "127.0.0.1:9090",
       "external_ui": "zashboard",
       "external_ui_download_url": "https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip",
-      "external_ui_download_detour": "💯 节点选择"
+      "external_ui_download_detour": "🔓 魔法上网"
     },
     "cache_file": {
       "enabled": true,

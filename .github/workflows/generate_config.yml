@@ -1,0 +1,36 @@
+name: Generate config
+on: 
+  workflow_dispatch:
+  
+# 关键：在 workflow 级别设置权限
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11.9'
+          cache: "pip"
+      - run:
+          python gen-sing-box-config.py
+
+      - name: Push to config-singbox repo
+        run: |
+
+          # 克隆 config-singbox main 分支的最新提交记录
+          git clone --depth 1 https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/Config.git
+          
+          # 复制输出的 rule-set 文件到 config-singbox
+          cp -r output/config/singbox_config_*.json Config/sing-box
+          cd Config
+
+          # 推送源文件 到分支 rule-set
+          git add .
+          git commit -m "update sing-box config" || echo "nothing to commit"
+          git push || echo "nothing to push"

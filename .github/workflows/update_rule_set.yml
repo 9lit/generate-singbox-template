@@ -6,8 +6,9 @@ on:
       - main
     paths:
       - update-rule-set.py
+      - base/pref_config.toml
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '0 8 * * 1'
   
 # 关键：在 workflow 级别设置权限
 permissions:
@@ -35,16 +36,6 @@ jobs:
         run: |
           python update-rule-set.py N
 
-      - name: Push base/url_set.txt
-        run: |
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@github.com"
-
-          git add .
-          git commit -m "update" || echo "nothing to commit"
-          git push || echo "nothing to push"
-
       - name: Push to config-singbox repo
         run: |
 
@@ -52,7 +43,7 @@ jobs:
           git clone --depth 1 -b rule-set https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
           
           # 复制输出的 rule-set 文件到 config-singbox
-          cp -r rule-set/*.srs config-singbox/
+          cp -r output/*.srs output/config/set_config.json config-singbox/
           cd config-singbox
 
           # 推送源文件 到分支 rule-set

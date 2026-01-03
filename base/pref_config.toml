@@ -1,0 +1,53 @@
+version = "v1.12"
+repo = "https://raw.githubusercontent.com/kumalum/config-singbox/rule-set/"
+
+[group.ads]
+rule_set = "site-ads-all"
+action = "reject"
+outbound = "广告拦截"
+server = "dns_block"
+type = "remote"
+format = "binary"
+download = ["https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs"]
+
+[group.adguard]
+rule_set = "site-adguard"
+action = "reject"
+outbound = "广告拦截"
+server = "dns_block"
+type = "remote"
+format = "binary"
+download = ["https://raw.githubusercontent.com/ppfeufer/adguard-filter-list/refs/heads/master/blocklist"]
+
+[group.direct]
+ip_is_private = true
+domain_suffix = ["1210923.xyz", "kumanine.dpdns.org", "kuma9.dpdns.org"]
+outbound = "本地"
+server = "dns_direct"
+action = "route"
+type = "remote"
+format = "binary"
+download = ["https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs"]
+
+
+[group.telegram]
+outbound = "电报"
+action = "route"
+type = "remote"
+format = "binary"
+# 远程下载地址
+download = ["https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-telegram.srs"]
+
+[group.bilibili]
+outbound = "哔哩哔哩"
+action = "route"
+type = "remote"
+format = "binary"
+download = ["https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-bilibili.srs"]
+
+[group.googlefcm]
+outbound = "谷歌 FCM"
+action = "route"
+type = "remote"
+format = "binary"
+download = ["https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-googlefcm.srs"]
