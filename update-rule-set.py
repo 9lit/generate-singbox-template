@@ -10,14 +10,10 @@ def downloads(g_name:str, url:str):
     # 获取下载地址， 并创建文件夹
     download_dir = path.downloads.joinpath(g_name)
 
-    logging.info(f"func: {downloads.__name__} \n组名称：{g_name}\n 下载链接： {url}")
-
     try:
         if not download_dir.exists(): 
             download_dir.mkdir(parents=True, exist_ok=True)
-            logging.debug(f"创建文件夹{download_dir}")
     except PermissionError:
-        logging.error("权限不足，无法创建文件夹，跳过本次下载")
         return
 
     # 下载文件
@@ -25,7 +21,6 @@ def downloads(g_name:str, url:str):
 
     file = download_dir.joinpath(url.split("/")[-1] )
     base.write(response.content, path=file, mode='wb', encoding=None)
-    logging.info(f"成功下载文件 {file}")
 
 def merge_json():
     """ 合并同类型的规则文件，即配置文件 pref.example.toml 中 downloads 同列表的规则 """
@@ -72,7 +67,6 @@ def binary_adguard():
 
     cmd = ["sing-box", "rule-set", "convert", "--type", "adguard", "--output", str(binary), str(adguard)]
     base.process_script(cmd)
-    logging.info("adguard 文件转换成功")
 
 
 def run(cache:str="Y"):
@@ -86,7 +80,6 @@ def run(cache:str="Y"):
         try: 
             urls = group[g_name][enum.download]
         except KeyError: 
-            logging.warning(f"{g_name}组不存在下载列表，跳过本次下载")
             continue;
         
         try:
@@ -106,6 +99,7 @@ def run(cache:str="Y"):
     # 转为二进制文件
     compile(enum.suffix.json)
 
+    if not path.out_config.exists(): path.out_config.mkdir(parents=True, exist_ok=True)
     base.write(after_config, path=path.after_config)
 
     binary_adguard()
@@ -116,8 +110,6 @@ if __name__ == "__main__":
     pref_config = config.Content.pref_config
 
     enum = base.enum
-
-    logging = config.logging
 
     parser = argparse.ArgumentParser()
     parser.add_argument("cache", default="Y", help="Y/n，清除缓存文件，默认为 Y。")

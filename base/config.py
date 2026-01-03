@@ -1,7 +1,5 @@
 import pathlib
 import base
-import logging
-logging.basicConfig(level=logging.INFO)
 
 class Path:
     root = pathlib.Path.cwd()

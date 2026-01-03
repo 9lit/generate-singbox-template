@@ -18,7 +18,7 @@ jobs:
           python-version: '3.11.9'
           cache: "pip"
       - run:
-          python gen-sing-box-config.py
+          python generate-config.py
 
       - name: Push to config-singbox repo
         run: |
