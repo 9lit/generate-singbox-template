@@ -63,7 +63,7 @@ def binary_adguard():
     adguard = [f for f in path.downloads.rglob("*") if f.is_file and f.name == "blocklist"]
     if not adguard: return
     adguard = adguard[0]
-    binary = path.outpath.joinpath(adguard.name).with_suffix(enum.suffix.srs)
+    binary = path.outpath.joinpath("adguard.srs")
 
     cmd = ["sing-box", "rule-set", "convert", "--type", "adguard", "--output", str(binary), str(adguard)]
     base.process_script(cmd)

@@ -1,5 +1,5 @@
 version = "v1.12"
-repo = "https://raw.githubusercontent.com/kumalum/config-singbox/rule-set/"
+repo = "https://raw.githubusercontent.com/kumalum/rule-set/main/"
 
 [group.ads]
 rule_set = "site-ads-all"
