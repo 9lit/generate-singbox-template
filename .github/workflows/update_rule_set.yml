@@ -40,11 +40,11 @@ jobs:
         run: |
 
           # 克隆 config-singbox rule-set 分支的最新提交记录
-          git clone --depth 1 -b rule-set https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/config-singbox.git
+          git clone --depth 1 https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/rule-set.git
           
           # 复制输出的 rule-set 文件到 config-singbox
-          cp output/*.srs output/config/set_config.json config-singbox/
-          cd config-singbox
+          cp output/*.srs output/config/set_config.json rule-set/
+          cd rule-set
 
           # 推送源文件 到分支 rule-set
           git add .
