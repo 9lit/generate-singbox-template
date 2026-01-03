@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Download set_config.json
-        run:
+        run: |
           mkdir -p output/config
           curl -o output/config/set_config.json "https://raw.githubusercontent.com/kumalum/rule-set/main/set_config.json"
 
