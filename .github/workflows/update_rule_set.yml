@@ -1,4 +1,4 @@
-name: Generate sing-box rule-set
+name: 更新 sing-box rule-set
 on: 
   workflow_dispatch:
   push:
@@ -42,10 +42,13 @@ jobs:
           # 克隆 config-singbox rule-set 分支的最新提交记录
           git clone --depth 1 https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository_owner }}/rule-set.git
           
+          # 设置身份
+          git config --global user.email "action[bot]@github.com"
+          git config --global user.name "action[bot]"
+
           # 复制输出的 rule-set 文件到 config-singbox
           cp output/*.srs output/config/set_config.json rule-set/
           cd rule-set
-          ls 
 
           # 推送源文件 到分支 rule-set
           git add .
